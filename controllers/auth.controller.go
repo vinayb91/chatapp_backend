@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/vinayb91/chatapp_backend/config"
 	"github.com/vinayb91/chatapp_backend/models"
@@ -26,6 +27,9 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	input.CreatedAt = time.Now()
+	input.UpdatedAt = time.Now()
+
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	input.Password = string(hashedPassword)
 	input.ID = primitive.NewObjectID()
@@ -35,11 +39,14 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
 		return
 	}
+	response := map[string]interface{}{
+		"id":       input.ID.Hex(),
+		"username": input.Username,
+		"email":    input.Email,
+	}
 
 	tokenString, _ := utils.GenerateJWT(input.ID.Hex())
 	utils.SetCookie(w, tokenString)
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(input)
+	json.NewEncoder(w).Encode(response)
 }
-
-// Define similar logic for Login and Logout as in the initial structure.

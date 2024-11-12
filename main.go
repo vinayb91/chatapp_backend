@@ -12,10 +12,10 @@ import (
 )
 
 func main() {
-	config.ConnectDB() // Establish MongoDB connection
+	config.ConnectDB()
 
 	r := mux.NewRouter()
-	routes.AuthRoutes(r) // Setup auth routes
+	routes.AuthRoutes(r)
 
 	port := ":5000"
 	fmt.Printf("Server is running on port %s\n", port)
